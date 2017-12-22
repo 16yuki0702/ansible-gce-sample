@@ -1,0 +1,16 @@
+---
+- name: deploy sources
+  synchronize:
+    src: src/app 
+    dest: /home/user_name/uwsgi/
+
+- name: change permission
+  file:
+    path: /home/user_name
+    owner: user_name
+    group: user_name
+    recurse: yes
+    mode: 0755
+
+- name: restart nginx
+  service: name=nginx state=restarted

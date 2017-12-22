@@ -1,0 +1,13 @@
+---
+- name: Setup nginx, uwsgi and django
+  vars_prompt:
+    - name: "hostname"
+      prompt: "specify servername to deploy. "
+      default: sample-web
+      private: no
+  hosts: "{{ hostname | default('sample-web', true) }}"
+  become: yes
+  become_method: sudo
+  roles:
+    - cloudsql
+    - app

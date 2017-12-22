@@ -1,0 +1,21 @@
+---
+- name: Download CloudSQL Proxy and setting
+  command: "{{ item }}"
+  with_items:
+    - wget https://dl.google.com/cloudsql/cloud_sql_proxy.linux.amd64 -O /usr/bin/cloud_sql_proxy
+    - chmod +x /usr/bin/cloud_sql_proxy
+
+- name: Copy setting file 1
+  copy: src=roles/cloudsql/template/cloud_sql_proxy.service dest=/etc/systemd/system/
+
+- name: Copy setting file 2
+  copy: src=roles/cloudsql/template/limits.conf dest=/etc/systemd/system/cloud_sql_proxy.service.d/
+
+- name: Copy setting file 3
+  copy: src=roles/cloudsql/template/cloud_sql_proxy.conf dest=/etc/cloud_sql_proxy/
+
+- name: Register Daemon
+  command: systemctl enable cloud_sql_proxy
+
+- name: Start Daemon
+  command: systemctl start cloud_sql_proxy

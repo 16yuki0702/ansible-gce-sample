@@ -1,0 +1,23 @@
+---
+- name: Create Compute Engine instances
+  hosts: local
+  vars_prompt:
+    - name: "hostname"
+      prompt: "specify servername to build. "
+      default: sample-web
+      private: no
+  gather_facts: False
+  connection: local
+  vars_files:
+    - gce_vars/machines
+  tasks:
+    - name: Bring up the instances in the first zone
+      gce:
+        service_account_permissions:
+          - storage-rw
+          - sql-admin
+        instance_names: "{{ hostname | default('sample-web', true) }}"
+        machine_type: "{{ machine_type }}"
+        image: "{{ image }}"
+        zone: "{{ zonec }}"
+      register: gcec

@@ -1,0 +1,4 @@
+---
+machine_type: g1-small
+image: ubuntu-1604
+zonec: asia-northeast1-c

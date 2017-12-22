@@ -1,0 +1,66 @@
+---
+- name: Install packages
+  apt: name={{item}} state=latest update_cache=yes
+  with_items:
+    - git
+    - vim
+    - curl
+    - sudo
+    - apt-transport-https
+    - lsb-release
+    - python3
+    - python3-dev
+    - python3-setuptools
+    - python3-pip
+    - language-pack-ja-base
+    - language-pack-ja
+    - nginx
+    - supervisor
+    - mysql-client
+    - libmysqlclient-dev
+
+- name: Install uwsgi
+  command: pip3 install uwsgi
+
+- name: Create Log Directory
+  file:
+    path: /home/user_name/uwsgi/log
+    state: directory
+    mode: 0755
+
+- name: Copy setting file 1
+  copy: src=roles/app/template/nginx-app.conf dest=/etc/nginx/sites-available/default
+
+- name: Copy setting file 2
+  copy: src=roles/app/template/supervisor-uwsgi.conf dest=/etc/supervisor/conf.d/
+
+- name: Copy setting file 3
+  copy: src=roles/app/template/uwsgi.ini dest=/home/user_name/uwsgi/
+
+- name: Copy setting file 4
+  copy: src=roles/app/template/uwsgi_params dest=/home/user_name/uwsgi/
+
+- name: deploy sources
+  synchronize:
+    src: src/app 
+    dest: /home/user_name/uwsgi/
+
+- name: change permission
+  file:
+    path: /home/user_name
+    owner: user_name
+    group: user_name
+    recurse: yes
+    mode: 0755
+
+- name: Add daemon
+  command: systemctl enable supervisor
+
+- name: Add daemon 2
+  command: systemctl start supervisor
+
+- name: Add daemon 3
+  command: supervisorctl reload
+
+- name: restart nginx
+  service: name=nginx state=restarted

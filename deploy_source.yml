@@ -1,0 +1,12 @@
+---
+- name: deploy sources
+  vars_prompt:
+    - name: "hostname"
+      prompt: "specify servername to deploy. "
+      default: sample-web
+      private: no
+  hosts: "{{ hostname | default('sample-web', true) }}"
+  become: yes
+  become_method: sudo
+  roles:
+    - deploy_source
